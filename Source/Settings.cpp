@@ -28,7 +28,7 @@ bool SettingRefs::setSequenceWithString (const String& type, const String& input
         volumeSequenceString = input;
         return true;
     }
-    else if (type == "pitch")
+    else if (type == "coarsePitch")
     {
         FrameSequence res = parser.parse (input, -64, 63, error);
 
@@ -37,8 +37,21 @@ bool SettingRefs::setSequenceWithString (const String& type, const String& input
             return false;
         }
 
-        pitchSequence = res;
-        pitchSequenceString = input;
+        coarsePitchSequence = res;
+        coarsePitchSequenceString = input;
+        return true;
+    }
+    else if (type == "finePitch")
+    {
+        FrameSequence res = parser.parse (input, -64, 63, error);
+
+        if (*error > kParseErrorLevelFatal)
+        {
+            return false;
+        }
+
+        finePitchSequence = res;
+        finePitchSequenceString = input;
         return true;
     }
     else if (type == "duty")
@@ -65,9 +78,13 @@ String& SettingRefs::getSequenceString (const String& type)
     {
         return volumeSequenceString;
     }
-    else if (type == "pitch")
+    else if (type == "coarsePitch")
     {
-        return pitchSequenceString;
+        return coarsePitchSequenceString;
+    }
+    else if (type == "finePitch")
+    {
+        return finePitchSequenceString;
     }
     else if (type == "duty")
     {

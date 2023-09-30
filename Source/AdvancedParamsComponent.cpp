@@ -48,28 +48,33 @@ AdvancedParamsComponent::AdvancedParamsComponent (Magical8bitPlug2AudioProcessor
 
     label5->setBounds (0, 4, 150, 24);
 
-    pitchCompo.reset (new CustomEnvelopeComponent (p, "pitch", "Pitch", "isPitchSequenceEnabled_raw"));
-    addAndMakeVisible (pitchCompo.get());
-    pitchCompo->setName ("pitch component");
+    coarsePitchCompo.reset (new CustomEnvelopeComponent (p, "coarsePitch", "Coarse Pitch", "isCoarsePitchSequenceEnabled_raw"));
+    addAndMakeVisible (coarsePitchCompo.get());
+    coarsePitchCompo->setName ("coarse pitch component");
+
+    finePitchCompo.reset (new CustomEnvelopeComponent (p, "finePitch", "Fine Pitch", "isFinePitchSequenceEnabled_raw"));
+    addAndMakeVisible (finePitchCompo.get());
+    finePitchCompo->setName ("fine pitch component");
 
     dutyCompo.reset (new CustomEnvelopeComponent (p, "duty", "Duty", "isDutySequenceEnabled_raw"));
     addAndMakeVisible (dutyCompo.get());
     dutyCompo->setName ("duty component");
 
-    coarseOrFineChoice.reset (new ChoiceComponent (p, "pitchSequenceMode_raw", "Resolution"));
-    addAndMakeVisible (coarseOrFineChoice.get());
-    coarseOrFineChoice->setName ("Coarse or fine");
+    fineModeChoice.reset (new ChoiceComponent (p, "finePitchSequenceMode_raw", "Mode"));
+    addAndMakeVisible (fineModeChoice.get());
+    fineModeChoice->setName ("Mode");
 
 
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (700, 216);
+    setSize (700, 272);
 
 
     //[Constructor] You can add your own custom stuff here..
     p.settingRefs.volumeSequenceListener = (FrameSequenceChangeListener*)volumeCompo.get();
-    p.settingRefs.pitchSequenceListener = (FrameSequenceChangeListener*)pitchCompo.get();
+    p.settingRefs.coarsePitchSequenceListener = (FrameSequenceChangeListener*)coarsePitchCompo.get();
+    p.settingRefs.finePitchSequenceListener = (FrameSequenceChangeListener*)finePitchCompo.get();
     p.settingRefs.dutySequenceListener = (FrameSequenceChangeListener*)dutyCompo.get();
     //[/Constructor]
 }
@@ -81,9 +86,10 @@ AdvancedParamsComponent::~AdvancedParamsComponent()
 
     volumeCompo = nullptr;
     label5 = nullptr;
-    pitchCompo = nullptr;
+    coarsePitchCompo = nullptr;
+    finePitchCompo = nullptr;
     dutyCompo = nullptr;
-    coarseOrFineChoice = nullptr;
+    fineModeChoice = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -106,9 +112,10 @@ void AdvancedParamsComponent::resized()
     //[/UserPreResize]
 
     volumeCompo->setBounds (0, 26, getWidth() - 160, 56);
-    pitchCompo->setBounds (0, 82, getWidth() - 204, 56);
-    dutyCompo->setBounds (0, 138, getWidth() - 160, 56);
-    coarseOrFineChoice->setBounds (getWidth() - 4 - 200, 86, 200, 28);
+    coarsePitchCompo->setBounds (0, 82, getWidth() - 160, 56);
+    finePitchCompo->setBounds (0, 138, getWidth() - 204, 56);
+    dutyCompo->setBounds (0, 194, getWidth() - 160, 56);
+    fineModeChoice->setBounds (getWidth() - 4 - 200, 142, 200, 28);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -142,15 +149,18 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Custom Envelopes" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="17.0" kerning="0.0" bold="0" italic="0" justification="33"/>
-  <GENERICCOMPONENT name="pitch component" id="30dd6e142bdc9ed5" memberName="pitchCompo"
+  <GENERICCOMPONENT name="coarse pitch component" id="30dd6e142bdc9ed5" memberName="coarsePitchCompo"
                     virtualName="" explicitFocusOrder="0" pos="0 82 204M 56" class="CustomEnvelopeComponent"
-                    params="p, &quot;pitch&quot;, &quot;Pitch&quot;, &quot;isPitchSequenceEnabled_raw&quot;"/>
+                    params="p, &quot;coarsePitch&quot;, &quot;Coarse Pitch&quot;, &quot;isCoarsePitchSequenceEnabled_raw&quot;"/>
+  <GENERICCOMPONENT name="fine pitch component" id="30dd6e142bdc9ed5" memberName="finePitchCompo"
+                    virtualName="" explicitFocusOrder="0" pos="0 82 204M 56" class="CustomEnvelopeComponent"
+                    params="p, &quot;finePitch&quot;, &quot;Fine Pitch&quot;, &quot;isFinePitchSequenceEnabled_raw&quot;"/>
   <GENERICCOMPONENT name="duty component" id="e5e04cf3ca5aec1" memberName="dutyCompo"
                     virtualName="" explicitFocusOrder="0" pos="0 138 160M 56" class="CustomEnvelopeComponent"
                     params="p, &quot;duty&quot;, &quot;Duty&quot;, &quot;isDutySequenceEnabled_raw&quot;"/>
-  <GENERICCOMPONENT name="Coarse or fine" id="950de1eb69e47c4c" memberName="coarseOrFineChoice"
-                    virtualName="" explicitFocusOrder="0" pos="4Rr 86 200 28" class="ChoiceComponent"
-                    params="p, &quot;pitchSequenceMode_raw&quot;, &quot;Resolution&quot;"/>
+  <GENERICCOMPONENT name="Mode" id="950de1eb69e47c4c" memberName="fineModeChoice"
+                    virtualName="" explicitFocusOrder="0" pos="4Rr 142 200 28" class="ChoiceComponent"
+                    params="p, &quot;finePitchSequenceMode_raw&quot;, &quot;Mode&quot;"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

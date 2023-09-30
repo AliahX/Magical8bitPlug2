@@ -59,9 +59,10 @@ private:
     //==============================================================================
     std::unique_ptr<CustomEnvelopeComponent> volumeCompo;
     std::unique_ptr<juce::Label> label5;
-    std::unique_ptr<CustomEnvelopeComponent> pitchCompo;
+    std::unique_ptr<CustomEnvelopeComponent> coarsePitchCompo;
+    std::unique_ptr<CustomEnvelopeComponent> finePitchCompo;
     std::unique_ptr<CustomEnvelopeComponent> dutyCompo;
-    std::unique_ptr<ChoiceComponent> coarseOrFineChoice;
+    std::unique_ptr<ChoiceComponent> fineModeChoice;
 
 
     //==============================================================================

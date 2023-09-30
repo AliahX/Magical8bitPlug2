@@ -119,9 +119,10 @@ Magical8bitPlug2AudioProcessor::Magical8bitPlug2AudioProcessor()
         // Sequence
         //
         std::make_unique<AudioParameterBool> ("isVolumeSequenceEnabled_raw", "Enabled", false),
-        std::make_unique<AudioParameterBool> ("isPitchSequenceEnabled_raw", "Enabled", false),
+        std::make_unique<AudioParameterBool> ("isCoarsePitchSequenceEnabled_raw", "Enabled", false),
+        std::make_unique<AudioParameterBool> ("isFinePitchSequenceEnabled_raw", "Enabled", false),
         std::make_unique<AudioParameterBool> ("isDutySequenceEnabled_raw", "Enabled", false),
-        std::make_unique<AudioParameterChoice> ("pitchSequenceMode_raw", "Mode", StringArray ({"Coarse", "Fine"}), 0)
+        std::make_unique<AudioParameterChoice> ("finePitchSequenceMode_raw", "Mode", StringArray ({"Fine8", "Fine16"}), 0),
     }
   )
 , settingRefs (&parameters)
@@ -326,13 +327,16 @@ void Magical8bitPlug2AudioProcessor::getStateInformation (MemoryBlock& destData)
     stateElement.release(); // give up the ownership already because xml object will delete it
 
     XmlElement* volEnvElement = new XmlElement ("volumeEnv");
-    XmlElement* pitEnvElement = new XmlElement ("pitchEnv");
+    XmlElement* coarsePitEnvElement = new XmlElement ("coarsePitchEnv");
+    XmlElement* finePitEnvElement = new XmlElement ("finePitchEnv");
     XmlElement* dutEnvElement = new XmlElement ("dutyEnv");
     volEnvElement->addTextElement (settingRefs.volumeSequenceString);
-    pitEnvElement->addTextElement (settingRefs.pitchSequenceString);
+    coarsePitEnvElement->addTextElement (settingRefs.coarsePitchSequenceString);
+    finePitEnvElement->addTextElement (settingRefs.finePitchSequenceString);
     dutEnvElement->addTextElement (settingRefs.dutySequenceString);
     rootElement->addChildElement (volEnvElement);
-    rootElement->addChildElement (pitEnvElement);
+    rootElement->addChildElement (coarsePitEnvElement);
+    rootElement->addChildElement (finePitEnvElement);
     rootElement->addChildElement (dutEnvElement);
 
     std::unique_ptr<XmlElement> xml (rootElement);
@@ -362,7 +366,8 @@ void Magical8bitPlug2AudioProcessor::setStateInformation (const void* data, int 
 
             // Custom Env
             XmlElement* volumeEnvXml = xmlState->getChildByName ("volumeEnv");
-            XmlElement* pitchEnvXml = xmlState->getChildByName ("pitchEnv");
+            XmlElement* coarsePitchEnvXml = xmlState->getChildByName ("finePitchEnv");
+            XmlElement* finePitchEnvXml = xmlState->getChildByName ("coarsePitchEnv");
             XmlElement* dutyEnvXml = xmlState->getChildByName ("dutyEnv");
 
             if (volumeEnvXml != nullptr)
@@ -389,26 +394,49 @@ void Magical8bitPlug2AudioProcessor::setStateInformation (const void* data, int 
                 }
             }
 
-            if (pitchEnvXml != nullptr)
+            if (coarsePitchEnvXml != nullptr)
             {
-                XmlElement* pitElem = pitchEnvXml->getFirstChildElement();
+                XmlElement* coarsePitElem = coarsePitchEnvXml->getFirstChildElement();
 
-                if (pitElem != nullptr && pitElem->isTextElement())
+                if (coarsePitElem != nullptr && coarsePitElem->isTextElement())
                 {
-                    String pitStr = pitElem->getText();
+                    String coarsePitStr = coarsePitElem->getText();
                     ParseError err = kParseErrorNone;
-                    settingRefs.setSequenceWithString ("pitch", pitStr, &err);
+                    settingRefs.setSequenceWithString ("coarsePitch", coarsePitStr, &err);
 
-                    if (settingRefs.pitchSequenceListener != nullptr)
+                    if (settingRefs.coarsePitchSequenceListener != nullptr)
                     {
-                        settingRefs.pitchSequenceListener->sequenceChanged (pitStr);
+                        settingRefs.coarsePitchSequenceListener->sequenceChanged (coarsePitStr);
                     }
 
-                    Logger::writeToLog ("pitch seq = " + pitStr);
+                    Logger::writeToLog ("coarse pitch seq = " + coarsePitStr);
                 }
                 else
                 {
-                    Logger::writeToLog ("pitchEnv entry found, but seems not like a text element.");
+                    Logger::writeToLog ("coarsePitchEnv entry found, but seems not like a text element.");
+                }
+            }
+
+            if (finePitchEnvXml != nullptr)
+            {
+                XmlElement* finePitElem = finePitchEnvXml->getFirstChildElement();
+
+                if (finePitElem != nullptr && finePitElem->isTextElement())
+                {
+                    String finePitStr = finePitElem->getText();
+                    ParseError err = kParseErrorNone;
+                    settingRefs.setSequenceWithString ("finePitch", finePitStr, &err);
+
+                    if (settingRefs.finePitchSequenceListener != nullptr)
+                    {
+                        settingRefs.finePitchSequenceListener->sequenceChanged (finePitStr);
+                    }
+
+                    Logger::writeToLog ("fine pitch seq = " + finePitStr);
+                }
+                else
+                {
+                    Logger::writeToLog ("finePitchEnv entry found, but seems not like a text element.");
                 }
             }
 

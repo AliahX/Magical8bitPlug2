@@ -80,10 +80,10 @@ enum NoiseAlgorithm
     kNoiseShort,
 };
 
-enum PitchSequenceMode
+enum FinePitchSequenceMode
 {
-    kPitchSequenceModeCoarse = 0,
-    kPitchSequenceModeFine
+    kPitchSequenceModeFine,
+    kPitchSequenceModeFine16
 };
 
 class FrameSequenceChangeListener
@@ -143,15 +143,18 @@ struct SettingRefs
     float* restrictsToNESFrequency_raw = nullptr;
     // Sequence
     float* isVolumeSequenceEnabled_raw = nullptr;
-    float* isPitchSequenceEnabled_raw = nullptr;
+    float* isCoarsePitchSequenceEnabled_raw = nullptr;
+    float* isFinePitchSequenceEnabled_raw = nullptr;
     float* isDutySequenceEnabled_raw = nullptr;
-    float* pitchSequenceMode_raw = nullptr;
+    float* finePitchSequenceMode_raw = nullptr;
 
     FrameSequence volumeSequence;
-    FrameSequence pitchSequence;
+    FrameSequence coarsePitchSequence;
+    FrameSequence finePitchSequence;
     FrameSequence dutySequence;
     String volumeSequenceString = "";
-    String pitchSequenceString = "";
+    String coarsePitchSequenceString = "";
+    String finePitchSequenceString = "";
     String dutySequenceString = "";
 
     bool setSequenceWithString (const String& type, const String& input, ParseError* error);
@@ -159,7 +162,8 @@ struct SettingRefs
 
     FrameSequence parseSequenceString (const String& input);
     FrameSequenceChangeListener* volumeSequenceListener = nullptr;
-    FrameSequenceChangeListener* pitchSequenceListener = nullptr;
+    FrameSequenceChangeListener* coarsePitchSequenceListener = nullptr;
+    FrameSequenceChangeListener* finePitchSequenceListener = nullptr;
     FrameSequenceChangeListener* dutySequenceListener = nullptr;
 
     //
@@ -175,9 +179,10 @@ struct SettingRefs
     bool vibratoIgnoresWheel() { return *vibratoIgnoresWheel_raw > 0.5; }
 
     bool isVolumeSequenceEnabled() { return *isVolumeSequenceEnabled_raw > 0.5; }
-    bool isPitchSequenceEnabled() { return *isPitchSequenceEnabled_raw > 0.5; }
+    bool isCoarsePitchSequenceEnabled() { return *isCoarsePitchSequenceEnabled_raw > 0.5; }
+    bool isFinePitchSequenceEnabled() { return *isFinePitchSequenceEnabled_raw > 0.5; }
     bool isDutySequenceEnabled() { return *isDutySequenceEnabled_raw > 0.5; }
-    PitchSequenceMode pitchSequenceMode() { return (PitchSequenceMode) ((int) (*pitchSequenceMode_raw)); }
+    FinePitchSequenceMode finePitchSequenceMode() { return (FinePitchSequenceMode) ((int) (*finePitchSequenceMode_raw)); }
     MonophonicBehavior monophonicBehavior() { return (MonophonicBehavior) ((int) (*monophonicBehavior_raw)); }
     ArpeggioIntervalType apreggioIntervalType() { return (ArpeggioIntervalType) ((int) (*arpeggioIntervalType_raw)); }
 
@@ -220,9 +225,9 @@ struct SettingRefs
         restrictsToNESFrequency_raw = (float*) parameters->getRawParameterValue ("restrictsToNESFrequency_raw");
         // Sequence
         isVolumeSequenceEnabled_raw = (float*) parameters->getRawParameterValue ("isVolumeSequenceEnabled_raw");
-        isPitchSequenceEnabled_raw = (float*) parameters->getRawParameterValue ("isPitchSequenceEnabled_raw");
+        isCoarsePitchSequenceEnabled_raw = (float*) parameters->getRawParameterValue ("isCoarsePitchSequenceEnabled_raw");
+        isFinePitchSequenceEnabled_raw = (float*) parameters->getRawParameterValue ("isFinePitchSequenceEnabled_raw");
         isDutySequenceEnabled_raw = (float*) parameters->getRawParameterValue ("isDutySequenceEnabled_raw");
-        pitchSequenceMode_raw = (float*) parameters->getRawParameterValue ("pitchSequenceMode_raw");
-
+        finePitchSequenceMode_raw = (float*) parameters->getRawParameterValue ("finePitchSequenceMode_raw");
     }
 };

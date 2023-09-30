@@ -35,8 +35,9 @@ struct TonalVoice : public BaseVoice   // The base for Pulse and Triangle
     double getVibratoPhase();
 
     // Custom Pitch/Note states
-    int currentPitchSequenceFrame = 0;
-    
+    int currentCoarsePitchSequenceFrame = 0;
+    int currentFinePitchSequenceFrame = 0;
+
     // Legato/Arpeggio
     int noteBuffer[NUMNOTEBUFFER];
     int currentNumNoteBuffer = 0;

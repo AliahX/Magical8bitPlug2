@@ -164,7 +164,11 @@ void CustomEnvelopeComponent::textEditorTextChanged (TextEditor& editor)
         {
             label->setText (getParseErrorString (err, 0, 15), dontSendNotification);
         }
-        else if (paramType == "pitch")
+        else if (paramType == "coarsePitch")
+        {
+            label->setText (getParseErrorString (err, -64, 63), dontSendNotification);
+        }
+        else if (paramType == "finePitch")
         {
             label->setText (getParseErrorString (err, -64, 63), dontSendNotification);
         }

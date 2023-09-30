@@ -23,7 +23,8 @@ void TonalVoice::startNote (int midiNoteNumber, float velocity, SynthesiserSound
     BaseVoice::startNote (midiNoteNumber, velocity, 0, currentPitchBendPosition);
 
     currentBendAmount = * (settingRefs->bendRange) * ((double) (currentPitchBendPosition - 8192)) / 8192.0;
-    currentPitchSequenceFrame = 0;
+    currentCoarsePitchSequenceFrame = 0;
+    currentFinePitchSequenceFrame = 0;
     vibratoCount = 0;
 
     float iniPitch = * (settingRefs->sweepInitialPitch);
@@ -45,7 +46,8 @@ void TonalVoice::advanceControlFrame()
 {
     BaseVoice::advanceControlFrame();
 
-    currentPitchSequenceFrame = settingRefs->pitchSequence.nextIndexOf (currentPitchSequenceFrame);
+    currentCoarsePitchSequenceFrame = settingRefs->coarsePitchSequence.nextIndexOf(currentCoarsePitchSequenceFrame);
+    currentFinePitchSequenceFrame = settingRefs->finePitchSequence.nextIndexOf(currentFinePitchSequenceFrame);
 }
 
 void TonalVoice::calculateAngleDelta()
@@ -54,23 +56,27 @@ void TonalVoice::calculateAngleDelta()
     int noteNumberMod = 0;
     double finePitchInSeq = 0;
 
-    if (settingRefs->isPitchSequenceEnabled())
+    if (settingRefs->isCoarsePitchSequenceEnabled())
     {
-        switch (settingRefs->pitchSequenceMode())
+        noteNumberMod = settingRefs->coarsePitchSequence.valueAt (currentCoarsePitchSequenceFrame);
+    }
+
+    if (settingRefs->isFinePitchSequenceEnabled())
+    {
+        switch (settingRefs->finePitchSequenceMode())
         {
+            case kPitchSequenceModeFine16:
+                finePitchInSeq = (double)settingRefs->finePitchSequence.valueAt (currentFinePitchSequenceFrame) / 16.0;
+                break;
+
             case kPitchSequenceModeFine:
-                finePitchInSeq = (double)settingRefs->pitchSequence.valueAt (currentPitchSequenceFrame) / 8.0;
+                finePitchInSeq = (double)settingRefs->finePitchSequence.valueAt (currentFinePitchSequenceFrame) / 8.0;
                 break;
-
-            case kPitchSequenceModeCoarse:
-                noteNumberMod = settingRefs->pitchSequence.valueAt (currentPitchSequenceFrame);
-                break;
-
             default:
                 break;
         }
     }
-    
+
     double byWheel = settingRefs->vibratoIgnoresWheel() ? 1.0 : currentModWheelValue;
     double vibratoAmount = * (settingRefs->vibratoDepth) * sin (getVibratoPhase()) * byWheel;
     double noteNoInDouble = noteNumber
